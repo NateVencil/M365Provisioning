@@ -38,7 +38,7 @@ Begin {
 
 Process {
     ## Import Common Functions for M365 artifact creation ##
-    . ".\CommonFunctions.ps1"
+    . ".\ProvisioningFunctions.ps1"
 
     foreach ($site in $SiteManifest) {
 
