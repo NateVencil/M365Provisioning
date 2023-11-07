@@ -58,9 +58,7 @@ function Get-Template {
         Get-PnPSiteTemplate -ExcludeHandlers ApplicationLifecycleManagement, AuditSettings, ContentTypes, CustomActions, ExtensibilityProviders, Features, Fields, Files, ImageRenditions, Lists, PageContents, Pages, Publishing, RegionalSettings, SearchSettings, SiteFooter, SiteHeader, SitePolicy, SupportedUILanguages, SyntexModels, Tenant, TermGroups, WebApiPermissions, Workflows -Configuration "config.json" -Out $TemplateName -Force -ErrorAction Stop
     }
     catch {
-        Write-SiteError -ErrorType TemplateExtractionFail -Message "Error in Extracting Template for $($TemplateSite)"
         $_.Exception.Message
-        
     }
 }
 
@@ -83,7 +81,7 @@ function Set-Template {
         Invoke-PnPSiteTemplate -Path $TemplateName -ErrorAction Stop
     }
     catch {
-        Write-SiteError -ErrorType TemplateApplicationFail -Message "Error in applying $($TemplateName) to $($SiteUrl)"
+        $_.Exception.Message
     }
 }
 
@@ -133,7 +131,6 @@ function New-SiteCollection {
     }
     catch {
         Write-Error $_.Exception.Message
-        #Write-SiteError -ErrorType SiteCollectionCreateFail -Message "The Site $($SiteCollectionURL) has failed to provision or attempts to retrieve site information failed."
     }
 }
 
@@ -168,7 +165,6 @@ function New-HubSiteRegistration {
     }
     catch {
         $_.Exception.Message
-        #Write-SiteError -Message "The Site $($HubSiteURL) has failed to be registered as a hub within the Tenant"
     }   
 }
 
@@ -206,7 +202,6 @@ function New-HubSiteAssociation {
     }
     catch {
         $_.Exception.Message
-        #Write-SiteError -Message "Hub site association for $($SpokeSiteURL) to $($HubSiteURL) failed."
     }	 
     
 }
@@ -241,7 +236,6 @@ function Add-MicrosoftTeam {
     }
     catch {
         $_.Exception.Message
-        #Write-SiteError -Message "Adding Microsoft Teams for $($TeamSiteURL) has failed"
     }
     Write-Host "Adding Prviate Channels to $($SiteforTeamsConversion.Title)" -ForegroundColor Magenta
     if ($PrivateChannelNames) {

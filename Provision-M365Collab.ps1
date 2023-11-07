@@ -19,14 +19,27 @@ Param
     [System.String]$SiteTemplateName
 )
 
-Begin {
+
     ## Run AzureADPreview in Powershell 7 Workaround ##
-    Import-Module -Name AzureADPreview -UseWindowsPowerShell
-
+    if($PSVersionTable.PSVersion.Major -eq 7) {
+        Import-Module -Name AzureADPreview -UseWindowsPowerShell
+    }
+    ## Import CSV and Validate Values ##
     $SiteManifest = Import-Csv $SPOSiteCSV
-
-    Connect-PnPOnline -Interactive -Url $SPADMinUrl
-
+    if (!$SiteManifest) {
+        $TerminateDate = $EndDate = Get-Date -Format "MM/dd/yyyy HH:mm"
+        Write-Host "Script terminated at $($TerminateDate) - CSV did not import" -ForegroundColor Red
+        End
+    }
+    ## Connect to M365 and terminate if unsuccessful ## 
+    try {
+       Connect-PnPOnline -Interactive -Url $SPADMinUrl 
+    }
+    catch {
+        $TerminateDate = $EndDate = Get-Date -Format "MM/dd/yyyy HH:mm"
+        Write-Host "Script terminated at $($TerminateDate) - Unsuccessful M365 Connection" -ForegroundColor Red
+        End
+    }
     ## Create PnP Site Templates ##
     try {
         Get-Template -TemplateSite $TemplateSiteURL -TemplateName $SiteTemplateName
@@ -34,16 +47,18 @@ Begin {
     catch {
         $_.Exception.Message
     }
-}
 
-Process {
-    ## Import Common Functions for M365 artifact creation ##
+
+
+    ## Import Provisioning Functions for M365 artifact creation ##
     . ".\ProvisioningFunctions.ps1"
 
     foreach ($site in $SiteManifest) {
+        $SiteExists = $null
+        $NewSiteProperties = $null
 
         ## Create Site Collection for Current Site ## 
-        Write-Host "Validating URL is available" -ForegroundColor Yellow
+        Write-Host "Validating URL is available" -ForegroundColor Magenta
         $SiteExists = Get-PnPTenantSite -Url $site.URL -ErrorAction SilentlyContinue
         if (!$SiteExists) {
             try {
@@ -89,4 +104,9 @@ Process {
         }
 
     }
-}
+
+    Disconnect-PnPOnline
+
+    $EndDate = Get-Date -Format "MM/dd/yyyy HH:mm"
+
+    Write-Host "Site Provisioning Script ended at $($EndDate)" -ForegroundColor Green
