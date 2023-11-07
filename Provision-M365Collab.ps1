@@ -19,11 +19,19 @@ Param
     [System.String]$SiteTemplateName
 )
 
+## Import Provisioning Functions for M365 artifact creation ##
+. ".\ProvisioningFunctions.ps1"
 
-## Run AzureADPreview in Powershell 7 Workaround ##
+## Run AzureADPreview and checks PnP Version is compatible with PS 7##
 if ($PSVersionTable.PSVersion.Major -eq 7) {
     Import-Module -Name AzureADPreview -UseWindowsPowerShell
+    $PnPVersion = Get-Module -ListAvailable -Name PnP.Powershell
+    if ($PnPVersion.Version.Major -notcontains 2) {
+        $TerminateDate = $EndDate = Get-Date -Format "MM/dd/yyyy HH:mm"
+        Write-host "Script terminated at $($TerminatedDate) - PnP Module is not compatible with Powershell 7" -ForegroundColor Yellow
+    }
 }
+
 ## Import CSV and Validate Values ##
 $SiteManifest = Import-Csv $SPOSiteCSV
 if (!$SiteManifest) {
@@ -49,10 +57,6 @@ if ($TemplateSiteURL) {
         $_.Exception.Message
     }  
 }
-
-
-## Import Provisioning Functions for M365 artifact creation ##
-. ".\ProvisioningFunctions.ps1"
 
 foreach ($site in $SiteManifest) {
     $SiteExists = $null
