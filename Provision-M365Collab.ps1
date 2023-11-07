@@ -51,8 +51,6 @@ if ($TemplateSiteURL) {
 }
 
 
-
-
 ## Import Provisioning Functions for M365 artifact creation ##
 . ".\ProvisioningFunctions.ps1"
 
@@ -74,6 +72,7 @@ foreach ($site in $SiteManifest) {
     }
     else {
         Write-Host "This site has already been provisioned within the Tenant. Skipping to next site" -ForegroundColor Yellow
+        continue
     }
   
     ## Register Current Site as Hub ## 
@@ -118,4 +117,4 @@ Disconnect-PnPOnline
 
 $EndDate = Get-Date -Format "MM/dd/yyyy HH:mm"
 
-Write-Host "Site Provisioning Script ended at $($EndDate)" -ForegroundColor Green
+Write-Host "Site Provisioning Script successfully completed at $($EndDate)" -ForegroundColor Green
