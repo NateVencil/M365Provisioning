@@ -41,7 +41,7 @@ if (!$SiteManifest) {
 }
 ## Connect to M365 and terminate if unsuccessful ## 
 try {
-    Connect-PnPOnline -Interactive -Url $SPADMinUrl 
+    Connect-PnPOnline -Interactive -Url $SPADMinUrl -ErrorAction Stop
 }
 catch {
     $TerminateDate = $EndDate = Get-Date -Format "MM/dd/yyyy HH:mm"
@@ -51,7 +51,7 @@ catch {
 ## Create PnP Site Templates ##
 if ($TemplateSiteURL) {
     try {
-        Get-Template -TemplateSite $TemplateSiteURL -TemplateName $SiteTemplateName
+        Get-Template -TemplateSite $TemplateSiteURL -TemplateName $SiteTemplateName -ErrorAction Stop 
     }
     catch {
         $_.Exception.Message
