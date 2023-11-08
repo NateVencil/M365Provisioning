@@ -64,20 +64,21 @@ foreach ($site in $SiteManifest) {
 
     ## Create Site Collection for Current Site ## 
     Write-Host "Validating URL is available" -ForegroundColor Magenta
-    $SiteExists = Get-PnPTenantSite -Url $site.URL -ErrorAction SilentlyContinue
-    if (!$SiteExists) {
-        try {
+    try {
+        $SiteExists = Get-PnPTenantSite -Url $site.URL -ErrorAction SilentlyContinue
+        if (!$SiteExists) {
             $NewSiteProperties = New-SiteCollection -SiteCollectionType $site.SiteType -SiteCollectionAlias $site.Alias -SiteCollectionTitle $site.Title -SiteCollectionURL $site.URL -ErrorAction Stop
         }
-        catch {
-            $_.Exception.Message
-            New-SiteError -ErrorType "SiteCreationError" -ErrorURL $site.URL -ErrorSiteTitle $site.Title -ErrorSiteType $site.SiteType -ErrorMessage "$($site.Title) has failed to provision - Please check provisioning file and try again" -ErrorCSVFilePath $ErrorCSVFilePath
-        }
+        else {
+            Write-Host "This site has already been provisioned within the Tenant. Skipping to next site" -ForegroundColor Yellow
+            continue
+        }  
     }
-    else {
-        Write-Host "This site has already been provisioned within the Tenant. Skipping to next site" -ForegroundColor Yellow
-        continue
+    catch {
+        $_.Exception.Message
+        New-SiteError -ErrorType "SiteCreationError" -ErrorURL $site.URL -ErrorSiteTitle $site.Title -ErrorSiteType $site.SiteType -ErrorMessage "$($site.Title) has failed to provision - Please check provisioning file and try again" -ErrorCSVFilePath $ErrorCSVFilePath
     }
+
   
     ## Register Current Site as Hub ## 
     if ($site.HubSite -eq "Yes") {
