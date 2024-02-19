@@ -1,11 +1,36 @@
 ## Logging Functions ## 
 function New-SiteError {
-    <#
-        .Synopsis 
-        This fucntion is called Write-SiteError. This handles much the error logging and messaging for any exceptions and failures in scripts. 
-        .Description 
-        This function, Get-Template, extracts the site template, page layout, and content identified in accompanying config.json file.
-    #>
+        <#
+        .SYNOPSIS
+            Write-SiteError function logs and handles errors occurring during script execution.
+        
+        .DESCRIPTION
+            This function logs errors and exceptions encountered during script execution. It takes various parameters such as ErrorMessage, ErrorType, ErrorURL, ErrorSiteTitle, ErrorSiteType, and ErrorCSVFilePath to create a structured error log.
+        
+        .PARAMETER ErrorMessage
+            Mandatory parameter specifying the error message encountered during script execution.
+        
+        .PARAMETER ErrorType
+            Mandatory parameter specifying the type of error encountered during script execution.
+        
+        .PARAMETER ErrorURL
+            Mandatory parameter specifying the URL related to the error encountered during script execution.
+        
+        .PARAMETER ErrorSiteTitle
+            Mandatory parameter specifying the title of the site where the error occurred during script execution.
+        
+        .PARAMETER ErrorSiteType
+            Mandatory parameter specifying the type of the site where the error occurred during script execution.
+        
+        .PARAMETER ErrorCSVFilePath
+            Mandatory parameter specifying the file path where the error log will be exported in CSV format.
+        
+        .EXAMPLE
+            New-SiteError -ErrorMessage "Page not found" -ErrorType "404" -ErrorURL "http://example.com" -ErrorSiteTitle "Example Site" -ErrorSiteType "Intranet" -ErrorCSVFilePath "C:\ErrorLog.csv"
+            
+            This example demonstrates how to use the New-SiteError function to log an error encountered during script execution.
+        
+        #>
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
@@ -37,11 +62,28 @@ function New-SiteError {
 ## Site Template Functions ##
 function Get-Template {
     <#
-        .Synopsis 
-        This fucntion is called Get-Template. This function has been created custom for the purposes of the SPO Provisioning Engine.
-        .Description 
-        This function, Get-Template, extracts the site template, page layout, and content identified in accompanying config.json file.
+    .SYNOPSIS
+        Get-Template function extracts site template, page layout, and content based on settings specified in the config.json file.
+    
+    .DESCRIPTION
+        This function, Get-Template, is custom-built for the SPO Provisioning Engine. It extracts the specified site template, page layout, and content based on the settings provided in the accompanying config.json file.
+    
+    .PARAMETER TemplateSite
+        Mandatory parameter specifying the URL of the site from which the template will be extracted.
+    
+    .PARAMETER TemplateName
+        Mandatory parameter specifying the name of the template file to be created.
+    
+    .PARAMETER TemplateSettings
+        Mandatory parameter specifying the settings file (config.json) that contains configuration details for the template extraction process.
+    
+    .EXAMPLE
+        Get-Template -TemplateSite "https://contoso.sharepoint.com/sites/TemplateSite" -TemplateName "Template1" -TemplateSettings "config.json"
+        
+        This example demonstrates how to use the Get-Template function to extract a site template, page layout, and content from a SharePoint site specified in the TemplateSite parameter. The extracted template will be saved as "Template1.pnp" based on the settings provided in the "config.json" file.
+    
     #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
